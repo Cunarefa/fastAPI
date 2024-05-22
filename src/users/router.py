@@ -49,3 +49,12 @@ async def delete_user(user_id: int, session: AsyncSession = Depends(get_session)
     await session.delete(user)
     await session.commit()
     return {"message": "User deleted successfully."}
+
+
+@router.get("/", response_model=list[UserRead])
+async def check_user(user: UserCreate, session: AsyncSession = Depends(get_session)):
+    # await Authorize.jwt_required()
+
+    query = select(User).order_by(User.registered_at.desc())
+    data = await session.execute(query)
+    return data.scalars().all()
